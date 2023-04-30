@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+import pickle
 
 import  myform
 
@@ -15,6 +16,10 @@ def runTrade():
     myform.g_name = v_name.get()
     myform.g_pass = v_pass.get()
     myform.g_code = v_code.get()
+
+    previous_input = {"name": myform.g_name, "pass": myform.g_pass, "code": myform.g_code}
+    with open("previous_input.pkl", "wb") as f:
+        pickle.dump(previous_input, f)
 
     # print(f"{},{v_pass.get()},{v_code.get()},zzzx")
 
@@ -60,6 +65,8 @@ def init(f_v_name):
     label3 = ttk.Label(frame1, text='銘柄コード', padding=(5, 2))
     label3.grid(row=2, column=0, sticky=E)
 
+
+
     # 会員ID
     v_name = StringVar()
     name_txt = ttk.Entry(
@@ -83,6 +90,16 @@ def init(f_v_name):
         textvariable=v_code,
         width=20)
     code_txt.grid(row=2, column=1)
+
+    #事前のデータがあれば読み込む。
+    try:
+        with open("previous_input.pkl", "rb") as f:
+            previous_input = pickle.load(f)
+            name_txt.insert(0, previous_input["name"])
+            pass_txt.insert(0, previous_input["pass"])
+            code_txt.insert(0, previous_input["code"])
+    except FileNotFoundError:
+        pass
 
     # Button
     button1 = ttk.Button(
