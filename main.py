@@ -1,9 +1,14 @@
 import tkinter as tk
 import pickle
+import time
+
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+
+import sbiweb as sbi
 
 DISP_MODE = "ON"   # "ON" or "OFF"
 
@@ -11,7 +16,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Input Form")
-        self.geometry("400x300")
+        self.geometry("420x320")
 
         self.entries = {}
         self.submitted_data = None
@@ -21,6 +26,7 @@ class Application(tk.Tk):
         self.create_label_entry("発注パスワード", "g_ordpass")
         self.create_label_entry("メールアドレス", "g_mailaddr")
         self.create_label_entry("メールパスワード", "g_mailpass")
+        self.create_label_entry("銘柄コード", "g_code")
         self.create_label_entry("設定パーセント", "g_setper")
 
         self.load_previous_input()
@@ -47,7 +53,7 @@ class Application(tk.Tk):
 
     def submit(self):
         submitted_data = {}
-        for key in ["g_username", "g_loginpass", "g_ordpass", "g_mailaddr", "g_mailpass", "g_setper"]:
+        for key in ["g_username", "g_loginpass", "g_ordpass", "g_mailaddr", "g_mailpass", "g_code", "g_setper"]:
             entry_widget = self.entries[key]
             input_text = entry_widget.get()
             submitted_data[key] = input_text
@@ -57,7 +63,7 @@ class Application(tk.Tk):
             pickle.dump(submitted_data, f)
 
         self.submitted_data = submitted_data
-        self.quit()
+        self.destroy()
 
 
 if __name__ == "__main__":
@@ -71,10 +77,18 @@ if __name__ == "__main__":
             options = Options()
             options.add_argument('--headless')
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-            ret = sbiIpoOrder(driver, user_input)
 
         else:
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+
+        #print(type(driver))
+
+        ret = sbi.sbiIpoLogin(driver, user_input)
+        if ret == 0:    #ログイン完了
+            sbi.sbiWatchStock(driver, user_input)   #銘柄板情報に飛ぶ
+            sbi.sbiLogOut(driver)                   #ログアウト
+
+        driver.quit()
 
         print(f"ret={ret}")
 
