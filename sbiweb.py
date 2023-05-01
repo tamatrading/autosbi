@@ -91,8 +91,27 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
     # 現物買ページにジャンプ
     driver.find_element(by=By.XPATH, value="/html/body/div[4]/div/table/tbody/tr/td[1]/div/form[2]/div[4]/div[2]/div[1]/table/tbody/tr/td[1]/p/a").click()
 
+    # ボタンを設定する
+    status = driver.find_element(by=By.NAME, value="sor_flg").is_selected()
+    if status == True:    #SORにチェックが入っている場合には、チェックを外す
+        driver.find_element(by=By.NAME, value="sor_flg").click()
+    driver.find_element(by=By.NAME, value="input_market").send_keys(in_data["g_market"])    #市場の入力
+    driver.find_element(by=By.NAME, value="input_quantity").send_keys(in_data["g_lot"])    #市場の入力
+    driver.find_element(by=By.ID, value="gyakusashine_gsn2").click()    #「逆指値」ボタンをON
+    driver.find_element(by=By.ID, value="gyakusashine_nariyuki").click()    #「逆指値/成行」ボタンをON
+
+    status = driver.find_element(by=By.NAME, value="skip_estimate").is_selected()
+    if status == False:    #注文確認画面を省略にチェックが入っていない場合には、チェックを付ける
+        driver.find_element(by=By.NAME, value="skip_estimate").click()
+    driver.find_element(by=By.NAME, value="trade_pwd").send_keys(in_data["g_ordpass"])  #取引パスワード
+
+    time.sleep(5)
+    driver.find_element(by=By.XPATH, value="//img[@title='注文発注']").click()  #注文発注ボタン
+
     # 始値がつくまで待機する
-    for retry in range(10):
+    for retry in range(30):
+
+
         #locator = (By.XPATH, "/html/body/div[4]/div/table/tbody/tr/td[1]/div/form[2]/div[4]/div[1]/div[3]/table/tbody/tr[1]/td[1]/p/span[1]")
         #WebDriverWait(driver, 30).until(EC.visibility_of_element_located(locator))
         #moneyTag = driver.find_element(by=By.XPATH, value="/html/body/div[4]/div/table/tbody/tr/td[1]/div/form[2]/div[4]/div[1]/div[3]/table/tbody/tr[1]/td[1]/p/span[1]")
@@ -100,6 +119,3 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
         #print(money)
         time.sleep(1)
 
-
-
-    time.sleep(30)

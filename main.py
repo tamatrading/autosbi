@@ -16,7 +16,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Input Form")
-        self.geometry("420x320")
+        self.geometry("420x600")
 
         self.entries = {}
         self.submitted_data = None
@@ -26,8 +26,10 @@ class Application(tk.Tk):
         self.create_label_entry("発注パスワード", "g_ordpass")
         self.create_label_entry("メールアドレス", "g_mailaddr")
         self.create_label_entry("メールパスワード", "g_mailpass")
-        self.create_label_entry("銘柄コード", "g_code")
         self.create_label_entry("設定パーセント", "g_setper")
+        self.create_label_entry("購入単元数", "g_lot")
+        self.create_label_entry("市場", "g_market")
+        self.create_label_entry("銘柄コード", "g_code")
 
         self.load_previous_input()
 
@@ -53,7 +55,7 @@ class Application(tk.Tk):
 
     def submit(self):
         submitted_data = {}
-        for key in ["g_username", "g_loginpass", "g_ordpass", "g_mailaddr", "g_mailpass", "g_code", "g_setper"]:
+        for key in ["g_username", "g_loginpass", "g_ordpass", "g_mailaddr", "g_mailpass", "g_setper", "g_lot", "g_market", "g_code", ]:
             entry_widget = self.entries[key]
             input_text = entry_widget.get()
             submitted_data[key] = input_text
@@ -91,7 +93,6 @@ if __name__ == "__main__":
         driver.quit()
 
         print(f"ret={ret}")
-
 
     else:
         print("quit!")
