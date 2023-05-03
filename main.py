@@ -16,7 +16,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Input Form")
-        self.geometry("420x600")
+        self.geometry("350x400")
 
         self.entries = {}
         self.submitted_data = None
@@ -33,14 +33,19 @@ class Application(tk.Tk):
 
         self.load_previous_input()
 
-        self.submit_button = tk.Button(self, text="Submit", command=self.submit)
-        self.submit_button.pack()
+        self.submit_button = tk.Button(self, text="　トレード開始　", command=self.submit, bg="red", fg="white")
+        self.submit_button.pack(pady=10)
 
     def create_label_entry(self, label_text, key):
-        label = tk.Label(self, text=label_text)
-        label.pack()
-        entry = tk.Entry(self)
-        entry.pack()
+        frame = tk.Frame(self)
+        frame.pack(pady=5)
+
+        label = tk.Label(frame, text=label_text, width=16, anchor='e')
+        label.pack(side=tk.LEFT, padx=(0, 5))
+
+        entry = tk.Entry(frame, width=30)
+        entry.pack(side=tk.LEFT)
+
         self.entries[key] = entry
 
     def load_previous_input(self):
@@ -55,11 +60,12 @@ class Application(tk.Tk):
 
     def submit(self):
         submitted_data = {}
-        for key in ["g_username", "g_loginpass", "g_ordpass", "g_mailaddr", "g_mailpass", "g_setper", "g_lot", "g_market", "g_code", ]:
+        for key in ["g_username", "g_loginpass", "g_ordpass", "g_mailaddr", "g_mailpass", "g_setper", "g_lot",
+                    "g_market", "g_code", ]:
             entry_widget = self.entries[key]
             input_text = entry_widget.get()
             submitted_data[key] = input_text
-            #print(f"Submitted {key}: {input_text}")
+            # print(f"Submitted {key}: {input_text}")
 
         with open("new_previous_input.pkl", "wb") as f:
             pickle.dump(submitted_data, f)
