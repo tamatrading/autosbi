@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
 import sbiweb as sbi
+import test
 
 DISP_MODE = "ON"   # "ON" or "OFF"
 
@@ -75,6 +76,9 @@ class Application(tk.Tk):
 
 
 if __name__ == "__main__":
+    #test.test1()
+    #exit(0)
+
     app = Application()
     app.mainloop()
     user_input = app.submitted_data
@@ -93,7 +97,12 @@ if __name__ == "__main__":
 
         ret = sbi.sbiIpoLogin(driver, user_input)
         if ret == 0:    #ログイン完了
-            sbi.sbiWatchStock(driver, user_input)   #銘柄板情報に飛ぶ
+            sbi.sbiGotoSpotPurchase(driver,user_input)  #現物買いページにジャンプ
+            for retry in range(42): #7時間
+                ret1 = sbi.sbiWatchStock(driver, user_input)   #銘柄板情報に飛ぶ
+                if ret1 == 0: #継続
+                    driver.refresh()
+
             sbi.sbiLogOut(driver)                   #ログアウト
 
         driver.quit()

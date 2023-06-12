@@ -76,10 +76,9 @@ def sbiLogOut(driver:selenium.webdriver.chrome.webdriver.WebDriver):
         return
 
 #-----------------------------
-#指定された銘柄コードの板情報を見に行く
+#ログイン画面から「現物買い」ページにジャンプする
 #-----------------------------
-def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data):
-
+def sbiGotoSpotPurchase(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data):
     # 銘柄情報ページにジャンプ
     driver.find_element(by=By.NAME, value="i_stock_sec").send_keys(in_data["g_code"])
     driver.find_element(by=By.XPATH, value="//img[@title='株価検索']").click()
@@ -90,6 +89,11 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
 
     # 現物買ページにジャンプ
     driver.find_element(by=By.XPATH, value="/html/body/div[4]/div/table/tbody/tr/td[1]/div/form[2]/div[4]/div[2]/div[1]/table/tbody/tr/td[1]/p/a").click()
+
+#-----------------------------
+#指定された銘柄コードの板情報を見に行く
+#-----------------------------
+def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data):
 
     # ボタンを設定する
     status = driver.find_element(by=By.NAME, value="sor_flg").is_selected()
@@ -106,9 +110,14 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
     driver.find_element(by=By.NAME, value="trade_pwd").send_keys(in_data["g_ordpass"])  #取引パスワード
 
     # 始値がつくまで待機する
-    for retry in range(30):
-        moneyTag = driver.find_element(by=By.XPATH, value="//*[@id='MTB0_2']/span[1]")
-        print(moneyTag.text)
+    for retry in range(600):
+        try:
+            moneyTag = driver.find_element(by=By.XPATH, value="//*[@id='MTB0_2']/span[1]")
+            print(f"{moneyTag.text} : {retry}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            time.sleep(1)
+            continue
 
         #locator = (By.XPATH, "/html/body/div[4]/div/table/tbody/tr/td[1]/div/form[2]/div[4]/div[1]/div[3]/table/tbody/tr[1]/td[1]/p/span[1]")
         #WebDriverWait(driver, 30).until(EC.visibility_of_element_located(locator))
@@ -116,6 +125,7 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
         #money = int(moneyTag.text.replace(",", ""))
         time.sleep(1)
 
+    return 0
 
 
     #time.sleep(5)
