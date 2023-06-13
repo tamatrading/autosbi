@@ -117,7 +117,7 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
         except Exception as e:
             print(f"An error occurred: {e}")
             time.sleep(1)
-            continue
+            break
 
         #locator = (By.XPATH, "/html/body/div[4]/div/table/tbody/tr/td[1]/div/form[2]/div[4]/div[1]/div[3]/table/tbody/tr[1]/td[1]/p/span[1]")
         #WebDriverWait(driver, 30).until(EC.visibility_of_element_located(locator))
