@@ -109,21 +109,36 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
         driver.find_element(by=By.NAME, value="skip_estimate").click()
     driver.find_element(by=By.NAME, value="trade_pwd").send_keys(in_data["g_ordpass"])  #取引パスワード
 
+    first = True
+
     # 始値がつくまで待機する
-    for retry in range(600):
+    for retry in range(100):
         try:
             moneyTag = driver.find_element(by=By.XPATH, value="//*[@id='MTB0_2']/span[1]")
-            print(f"{moneyTag.text} : {retry}")
+            print(f"{moneyTag.text} : {retry} : {(1+(int(in_data['g_setper'])/100))}")
+
+            if moneyTag.text != "--":   #数値が入っている場合
+                if first == True:  # "--"の後に数値になった！
+                    money = moneyTag.text.replace(",", "")
+                    ext = int(money) * (1+(int(in_data["g_setper"])/100))
+                    print(ext)
+                    driver.find_element(by=By.NAME, value="input_trigger_price").send_keys(str(ext))
+                    driver.find_element(by=By.XPATH, value="//img[@title='注文発注']").click()
+
+                    first = False
+                else:
+                    return -1   #すでに値が入っている。（注文済み？）
+
         except Exception as e:
             print(f"An error occurred: {e}")
-            time.sleep(1)
             break
 
         #locator = (By.XPATH, "/html/body/div[4]/div/table/tbody/tr/td[1]/div/form[2]/div[4]/div[1]/div[3]/table/tbody/tr[1]/td[1]/p/span[1]")
         #WebDriverWait(driver, 30).until(EC.visibility_of_element_located(locator))
         #moneyTag = driver.find_element(by=By.XPATH, value="/html/body/div[4]/div/table/tbody/tr/td[1]/div/form[2]/div[4]/div[1]/div[3]/table/tbody/tr[1]/td[1]/p/span[1]")
         #money = int(moneyTag.text.replace(",", ""))
-        time.sleep(1)
+
+        time.sleep(3)
 
     return 0
 
