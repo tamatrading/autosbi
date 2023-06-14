@@ -120,7 +120,7 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
             if moneyTag.text != "--":   #数値が入っている場合
                 if first == True:  # "--"の後に数値になった！
                     money = moneyTag.text.replace(",", "")
-                    ext = int(money) * (1+(int(in_data["g_setper"])/100))
+                    ext = int(int(money) * (1+(int(in_data["g_setper"])/100)))
                     print(ext)
                     driver.find_element(by=By.NAME, value="input_trigger_price").send_keys(str(ext))
                     driver.find_element(by=By.XPATH, value="//img[@title='注文発注']").click()
