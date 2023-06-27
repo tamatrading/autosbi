@@ -100,9 +100,12 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
     if status == True:    #SORにチェックが入っている場合には、チェックを外す
         driver.find_element(by=By.NAME, value="sor_flg").click()
     driver.find_element(by=By.NAME, value="input_market").send_keys(in_data["g_market"])    #市場の入力
+    driver.find_element(by=By.NAME, value="input_quantity").clear()    #株数のクリア
     driver.find_element(by=By.NAME, value="input_quantity").send_keys(in_data["g_lot"])    #株数の入力
     driver.find_element(by=By.ID, value="gyakusashine_gsn2").click()    #「逆指値」ボタンをON
-    driver.find_element(by=By.ID, value="gyakusashine_nariyuki").click()    #「逆指値/成行」ボタンをON
+    driver.find_element(by=By.ID, value="gyakusashine_sashine").click()    #「逆指値/成行」ボタンをON
+
+#逆指値／指値／金額ボックス＝ id:gsn_input_price
 
     status = driver.find_element(by=By.NAME, value="skip_estimate").is_selected()
     if status == False:    #注文確認画面を省略にチェックが入っていない場合には、チェックを付ける
@@ -114,18 +117,35 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
     # 始値がつくまで待機する
     for retry in range(100):
         try:
+            #大引けになった場合の処理
+            cTag = driver.find_element(by=By.XPATH, value="//*[@id='MTB0_0']/span[3]")
+            if cTag.text == "C":
+                return 2
+
+            #手動に戻った場合の処理
+            shudo = driver.find_elements(by=By.XPATH, value="//img[@title='自動更新ON']")
+            if len(shudo) > 0:
+                driver.find_element(by=By.XPATH, value="//img[@title='自動更新ON']").click()
+
             moneyTag = driver.find_element(by=By.XPATH, value="//*[@id='MTB0_2']/span[1]")
             print(f"{moneyTag.text} : {retry} : {(1+(int(in_data['g_setper'])/100))}")
 
-            if moneyTag.text != "--":   #数値が入っている場合
+            if moneyTag.text == "--":   #数値が入っている場合
+            #if moneyTag.text != "--":  # 数値が入っている場合
+
                 if first == True:  # "--"の後に数値になった！
                     money = moneyTag.text.replace(",", "")
-                    ext = int(int(money) * (1+(int(in_data["g_setper"])/100)))
-                    print(ext)
-                    driver.find_element(by=By.NAME, value="input_trigger_price").send_keys(str(ext))
+                    ext1 = int(int(money) * (1+(int(in_data["g_setper"])/100)))
+                    ext1 = round(ext1, -1)
+                    driver.find_element(by=By.NAME, value="input_trigger_price").send_keys(str(ext1))
+                    ext2 = int(int(money) * 1.1)
+                    ext2 = round(ext2, -1)
+                    print(f"{ext1} , {ext2}")
+                    driver.find_element(by=By.NAME, value="gsn_input_price").send_keys(str(ext2))
                     driver.find_element(by=By.XPATH, value="//img[@title='注文発注']").click()
 
                     first = False
+                    return 1
                 else:
                     return -1   #すでに値が入っている。（注文済み？）
 

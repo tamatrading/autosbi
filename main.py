@@ -103,6 +103,10 @@ if __name__ == "__main__":
                 if ret1 == 0: #継続
                     driver.refresh()
                 elif ret1 == 1: #注文完了
+                    print(f"注文完了しましたよーー")
+                    break
+                elif ret1 == 2: #大引け
+                    print(f"大引けーー")
                     break
 
             print(f"ret={ret}")
