@@ -118,9 +118,10 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
     for retry in range(100):
         try:
             #大引けになった場合の処理
-            cTag = driver.find_element(by=By.XPATH, value="//*[@id='MTB0_0']/span[3]")
-            if cTag.text == "C":
-                return 2
+            cTags = driver.find_elements(by=By.XPATH, value="//*[@id='MTB0_0']/span[3]")
+            if len(cTags) > 0:
+                if cTags[0].text == "C":
+                    return 2
 
             #手動に戻った場合の処理
             shudo = driver.find_elements(by=By.XPATH, value="//img[@title='自動更新ON']")
@@ -130,8 +131,7 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
             moneyTag = driver.find_element(by=By.XPATH, value="//*[@id='MTB0_2']/span[1]")
             print(f"{moneyTag.text} : {retry} : {(1+(int(in_data['g_setper'])/100))}")
 
-            if moneyTag.text == "--":   #数値が入っている場合
-            #if moneyTag.text != "--":  # 数値が入っている場合
+            if moneyTag.text != "--":  # 数値が入っている場合
 
                 if first == True:  # "--"の後に数値になった！
                     money = moneyTag.text.replace(",", "")

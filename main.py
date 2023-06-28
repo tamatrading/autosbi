@@ -110,7 +110,7 @@ if __name__ == "__main__":
                     break
 
             print(f"ret={ret}")
-            time.sleep(1000)
+            time.sleep(1800) #このスリープ中（３０分）に注文内容を確認してねーー
             sbi.sbiLogOut(driver)                   #ログアウト
 
         driver.quit()
