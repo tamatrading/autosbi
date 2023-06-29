@@ -93,6 +93,17 @@ def sbiGotoSpotPurchase(driver:selenium.webdriver.chrome.webdriver.WebDriver, in
 #-----------------------------
 #指定された銘柄コードの板情報を見に行く
 #-----------------------------
+def sbiWatchKehai(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data):
+    f_uri_hekai = driver.find_element(by=By.ID, value="MTB0_43").text
+    f_uri_kakaku = driver.find_element(by=By.ID, value="MTB0_44").text
+
+    print(f"売り気配：{uri_kehai}")
+    else:
+        print(f"売り気配とれません！：{len(f_elm)}")
+
+#-----------------------------
+#指定された銘柄コードの板情報を見に行く
+#-----------------------------
 def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data):
 
     # ボタンを設定する
@@ -116,6 +127,8 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
 
     # 始値がつくまで待機する
     for retry in range(100):
+        sbiWatchKehai(driver, in_data)
+
         try:
             #大引けになった場合の処理
             cTags = driver.find_elements(by=By.XPATH, value="//*[@id='MTB0_0']/span[3]")
