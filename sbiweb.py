@@ -3,6 +3,7 @@
 import selenium.webdriver.chrome.webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import common as Co
 
 #from selenium.common.exceptions import NoSuchElementException
 #from selenium.webdriver.chrome.service import Service
@@ -91,15 +92,24 @@ def sbiGotoSpotPurchase(driver:selenium.webdriver.chrome.webdriver.WebDriver, in
     driver.find_element(by=By.XPATH, value="/html/body/div[4]/div/table/tbody/tr/td[1]/div/form[2]/div[4]/div[2]/div[1]/table/tbody/tr/td[1]/p/a").click()
 
 #-----------------------------
-#指定された銘柄コードの板情報を見に行く
+# 気配値を取得する
 #-----------------------------
 def sbiWatchKehai(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data):
-    f_uri_hekai = driver.find_element(by=By.ID, value="MTB0_43").text
-    f_uri_kakaku = driver.find_element(by=By.ID, value="MTB0_44").text
 
-    print(f"売り気配：{uri_kehai}")
-    else:
-        print(f"売り気配とれません！：{len(f_elm)}")
+    try:
+        f_uri_kehai = Co.kehaiValue(driver.find_element(by=By.ID, value="MTB0_43").text)
+        f_uri_kakaku = Co.toValue(driver.find_element(by=By.ID, value="MTB0_44").text)
+        f_kai_kakaku = Co.toValue(driver.find_element(by=By.ID, value="MTB0_47").text)
+        f_kai_kehai = Co.kehaiValue(driver.find_element(by=By.ID, value="MTB0_48").text)
+    except Exception as e:
+        f_uri_kehai = "", -1
+        f_uri_kakaku = "", -1
+        f_kai_kakaku = "", -1
+        f_kai_kehai = "", -1
+
+    return f_uri_kehai, f_uri_kakaku, f_kai_kehai, f_kai_kakaku
+#    print(f"An error occurred: {e}")
+#    print(f"{f_uri_kakaku}:{f_uri_hekai}  ===  {f_kai_hekai}:{f_kai_kakaku}")
 
 #-----------------------------
 #指定された銘柄コードの板情報を見に行く
@@ -127,7 +137,8 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
 
     # 始値がつくまで待機する
     for retry in range(100):
-        sbiWatchKehai(driver, in_data)
+        kehai = sbiWatchKehai(driver, in_data)
+        print(f"{retry}  売気配 {kehai[0][0]} {kehai[0][1]} : | {kehai[1]} || {kehai[3]} | : {kehai[2][0]} {kehai[2][1]} 買気配 ")
 
         try:
             #大引けになった場合の処理
@@ -142,7 +153,7 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
                 driver.find_element(by=By.XPATH, value="//img[@title='自動更新ON']").click()
 
             moneyTag = driver.find_element(by=By.XPATH, value="//*[@id='MTB0_2']/span[1]")
-            print(f"{moneyTag.text} : {retry} : {(1+(int(in_data['g_setper'])/100))}")
+            #print(f"{moneyTag.text} : {retry} : {(1+(int(in_data['g_setper'])/100))}")
 
             if moneyTag.text != "--":  # 数値が入っている場合
 
@@ -155,7 +166,7 @@ def sbiWatchStock(driver:selenium.webdriver.chrome.webdriver.WebDriver, in_data)
                     ext2 = round(ext2, -1)
                     print(f"{ext1} , {ext2}")
                     driver.find_element(by=By.NAME, value="gsn_input_price").send_keys(str(ext2))
-                    driver.find_element(by=By.XPATH, value="//img[@title='注文発注']").click()
+                    #driver.find_element(by=By.XPATH, value="//img[@title='注文発注']").click()
 
                     first = False
                     return 1
